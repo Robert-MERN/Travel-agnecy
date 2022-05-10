@@ -1,0 +1,44 @@
+flights
+
+flight type: return, oneway
+multi city option
+home page link isn't working
+better calender
+passenger type:
+adult(12 and above)
+child (2-below 12)
+infant(0 to below 2)
+
+flight summary
+flight duration
+stopover time if any
+terminals if any
+baggage if any
+
+
+TRAVELLER INFORMATION
+
+title
+First Name on passport
+Middle name on passport
+Last name on passport
+Gender
+DOB
+Contact number
+email address
+
+Advance passenger information(shouldn't be mandatory)
+Passport number
+passport expiry
+passport issuing country
+nationality
+gender
+dob
+
+
+fare breakdown to be discussed.
+adult, child and infant breakdown.
+
+
+hotels
+roo
