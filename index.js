@@ -16,7 +16,7 @@ app.use("/api/checkout", stripe);
 app.use(express.static(path.join(__dirname, "/client-site/build")));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/client-site/build/index.html'));
+  res.sendFile(path.join(__dirname, '/client-site/build', 'index.html'));
 });
 
 
