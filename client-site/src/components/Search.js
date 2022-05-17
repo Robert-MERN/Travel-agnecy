@@ -72,9 +72,9 @@ const SearchWrapper = styled.div`
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     background-color: #fff;
     font-family: sans-serif;
-    z-index: 500;
+    z-index: 300000;
     
-    ${mobile({ width: "100%" })}
+    ${mobile({ width: "100%", zIndex: "300000"  })}
 
     .search-key{
         padding: 6px 0;

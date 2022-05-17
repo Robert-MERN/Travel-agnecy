@@ -11,6 +11,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Loading from "../components/Loading";
+import { setAlert, resetAlert } from "../redux/alertSlice";
+import { useDispatch } from 'react-redux';
+
 import {
     addDoc,
     collection,
@@ -24,9 +27,9 @@ function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
-            <Link color="inherit" to="/">
+            <Link style={{ color: "yellow" }} to="/">
                 AXEN HOLIDAYS
-            </Link>{' '}
+            </Link>{'  '}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
@@ -43,6 +46,7 @@ function Error(props) {
 const theme = createTheme();
 
 export default function SignUp() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isLoading, setIsloading] = useState(false);
     const [error, setError] = useState(false);
@@ -71,29 +75,46 @@ export default function SignUp() {
             });
             setIsloading(false);
             navigate("/login")
+            dispatch(setAlert("signupSuc"));
+            setTimeout(() => {
+                dispatch(resetAlert())
+            }, 2500)
+            clearTimeout();
         } catch (err) {
             setError(true)
             setIsloading(false);
+            dispatch(setAlert("signupErr"));
+            setTimeout(() => {
+                dispatch(resetAlert())
+            }, 2500)
+            clearTimeout();
         }
 
     };
 
     return (
-        <>
+        <div style={{
+            background: "url(https://axen-trave-test.herokuapp.com/images/bg-sign-up-cover.jpeg)", width: "100vw", minHeight: "100vh", paddingTop
+                : "100px"
+        }} >
             <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
                     <Box
                         sx={{
-                            marginTop: 8,
+                            boxSizing: "content-box",
+                            padding: "0 30px 30px 30px",
                             display: 'flex',
+                            borderRadius: "12px",
                             flexDirection: 'column',
                             alignItems: 'center',
+                            background: "white",
+                            boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px"
                         }}
                     >
-                        <Avatar sx={{ m: 5, backgroundColor: "#fff", transform: "scale(3)", boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px" }}>
-                            <img style={{ transform: "scale(0.8)", objectFit: "cover" }} src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
-                        </Avatar>
+                        <div style={{ width: "130px", height: "130px", marginTop: "2em", backgroundColor: "#fff", borderRadius: "50%", boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px", display: "grid", placeItems: "center", overflow: "hidden" }}>
+                            <img style={{ width: "100%", objectFit: "cover" }} src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
+                        </div>
                         <Typography component="h1" variant="h2">
                             Sign up
                         </Typography>
@@ -167,12 +188,12 @@ export default function SignUp() {
                             </Grid>
                         </Box>
                     </Box>
-                    <Copyright sx={{ mt: 8, mb: 4, fontSize: "12px" }} />
+                    <Copyright sx={{ mt: 8, mb: 4, fontSize: "12px", color: "white" }} />
                 </Container>
             </ThemeProvider>
             {isLoading &&
                 <Loading />
             }
-        </>
+        </div>
     );
 }

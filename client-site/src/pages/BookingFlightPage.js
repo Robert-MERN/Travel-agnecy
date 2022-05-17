@@ -6,11 +6,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Search from '../components/Search';
 import CancelIcon from '@material-ui/icons/Cancel';
 import axios from 'axios'
-import Loading from '../components/Loading'
+import Loading from '../components/Loading';
+import { setAlert, resetAlert } from "../redux/alertSlice";
+import { useDispatch } from 'react-redux';
 
 
 
 function BookingFlightPage() {
+    const dispatch = useDispatch();
     const retreivedData = useLocation().state;
     const navigate = useNavigate()
     // all details
@@ -93,6 +96,11 @@ function BookingFlightPage() {
                 setBooked(res.data);
                 setIsLoading(false);
                 navigate("/choose-payment", { state: res.data })
+                dispatch(setAlert("bookFlight"));
+                setTimeout(() => {
+                    dispatch(resetAlert())
+                }, 2500)
+                clearTimeout();
             } catch (err) {
                 setIsLoading(false);
                 setError(err);

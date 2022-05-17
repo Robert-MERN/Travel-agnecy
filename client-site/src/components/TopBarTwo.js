@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../Responsive";
@@ -19,7 +19,8 @@ import BalconyIcon from '@mui/icons-material/Balcony';
 import HomeIcon from '@mui/icons-material/Home';
 import Fade from 'react-reveal/Fade';
 import { useSelector, useDispatch } from "react-redux";
-import { selectUser, userLogout } from "../redux/userSlice";
+import { selectUser } from "../redux/userSlice";
+import PermissionCard from './PermissionCard';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PersonIcon from '@material-ui/icons/Person';
 
@@ -34,8 +35,12 @@ const useStyles = makeStyles({
 function TopBarTwo() {
     const currentUser = useSelector(selectUser);
     const dispatch = useDispatch();
-    const logout = () => {
-        dispatch(userLogout());
+    const [loggingOut, setLoggingOut] = useState(false)
+    const clear = () => {
+        setLoggingOut(false);
+    }
+    const show = () => {
+        setLoggingOut(true);
     }
     const classes = useStyles();
     const [menu1, setMenu1] = useState(false);
@@ -226,119 +231,144 @@ function TopBarTwo() {
                     </ListItem>
                 </Link>
             </List>
-            {currentUser?
-            <List>
-                <ListItem onClick={toggleDrawer(anchor, false)} button>
-                    <div onClick={logout} style={{ display: "flex", alignItems: "center" }} >
-                        <ListItemIcon>
-                            <ExitToAppIcon style={{ transform: "scale(1.5)" }} />
-                        </ListItemIcon>
-                        <ListItemText>
-                            <p style={{ fontSize: "16px" }} >Logout</p>
-                        </ListItemText>
-                    </div>
-                </ListItem>
-            </List>:
-            <List>
-                <Link className="link" to="/login" >
+            {currentUser ?
+                <List>
                     <ListItem onClick={toggleDrawer(anchor, false)} button>
-                        <div style={{ display: "flex", alignItems: "center" }} >
+                        <div onClick={show} style={{ display: "flex", alignItems: "center" }} >
                             <ListItemIcon>
-                                <PersonIcon style={{ transform: "scale(1.5)" }} />
+                                <ExitToAppIcon style={{ transform: "scale(1.5)" }} />
                             </ListItemIcon>
                             <ListItemText>
-                                <p style={{ fontSize: "16px" }} >Login</p>
+                                <p style={{ fontSize: "16px" }} >Logout</p>
                             </ListItemText>
                         </div>
                     </ListItem>
-                </Link>
-            </List>
+                </List> :
+                <List>
+                    <Link className="link" to="/login" >
+                        <ListItem onClick={toggleDrawer(anchor, false)} button>
+                            <div style={{ display: "flex", alignItems: "center" }} >
+                                <ListItemIcon>
+                                    <PersonIcon style={{ transform: "scale(1.5)" }} />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <p style={{ fontSize: "16px" }} >Login</p>
+                                </ListItemText>
+                            </div>
+                        </ListItem>
+                    </Link>
+                </List>
             }
         </div>
     );
+
+    const ctn = useRef();
+    const ctn2 = useRef();
+    const ctn3 = useRef();
+
+    useEffect(() => {
+        const handler = (event) => {
+            if (!ctn.current?.contains(event.target)) {
+                setMenu1(false);
+            }
+            if (!ctn2.current?.contains(event.target)) {
+                setMenu2(false);
+            }
+            if (!ctn3.current?.contains(event.target)) {
+                setMenu3(false);
+            }
+        };
+        document.addEventListener("mouseover", handler);
+        return () => {
+            document.removeEventListener("mouseover", handler);
+        };
+    });
     return (
-        <TopBarTwoWrpapper>
-            <div className="topbar-two-wrapper">
-                <Fade top>
-                    <Link className='link' to="/" >
-                        <div className="header">
-                            <img src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
-                        </div>
-                    </Link>
-                </Fade>
-                <Fade delay={200} right>
-
-
-                    <div className="menu">
-                        <div className="menues">
-                            <Link className="link" to="/" ><p className="text">Home</p></Link>
-                        </div>
-                        <div onMouseOver={onHover1} className="menues dropdown-menu1">
-                            <p className="text">Flights</p>
-                            {menu1 &&
-                                <div onMouseOver={onHover1} onMouseLeave={onLeave1} className="dd-menu1">
-                                    <Link className="link" to="/search-flights" ><p className="text">Search flights</p></Link>
-                                    <Link className="link" to="/book-flight-page" ><p className="text">Booking flights</p></Link>
-                                    <Link className="link" to="/flight-checkout" ><p className="text">Flights Checkout</p></Link>
-                                </div>
-                            }
-                        </div>
-                        <div onMouseOver={onHover2} className="menues dropdown-menu2">
-                            <p className="text">Hotels</p>
-                            {menu2 &&
-                                <div onMouseOver={onHover2} onMouseLeave={onLeave2} className="dd-menu2">
-                                    <Link className="link" to="/search-hotels" ><p className="text">Search Hotels</p></Link>
-                                    <Link className="link" to="/book-hotel-page" ><p className="text">Booking Hotels</p></Link>
-                                    <Link className="link" to="/hotel-checkout" ><p className="text">Hotels Reservation</p></Link>
-                                </div>
-                            }
-                        </div>
-                        <div onMouseOver={onHover3} onMouseLeave={onLeave3} className="menues dropdown-menu3">
-                            <p className="text">Rent a Car</p>
-                            {menu3 &&
-                                <div onMouseOver={onHover3} onMouseLeave={onLeave3} className="dd-menu3">
-                                    <Link className="link" to="/search-cars" ><p className="text">Search Car</p></Link>
-                                    <Link className="link" to="/book-car-page" ><p className="text">Booking Car</p></Link>
-                                    <Link className="link" to="/car-checkout" ><p className="text">Car Reservation</p></Link>
-                                </div>
-                            }
-                        </div>
-                        <div className="menues">
-                            <Link className="link" to="/search-flights" ><p className="text">Holidays</p></Link>
-                        </div>
-                        <div className="menues">
-                            <Link className="link" to="/book-flight-page" ><p className="text">My Bookings</p></Link>
-                        </div>
-                        <div className="menues">
-                            <Link className="link" to="/faq" ><p className="text">Help</p></Link>
-                        </div>
-                        {currentUser ?
-                            <div className="menues">
-                                <p onClick={logout} className="text">Logout</p>
-                            </div> :
-                            <div className="menues">
-                                <Link className="link" to="/login" ><p className="text">Login</p></Link>
+        <>
+            <TopBarTwoWrpapper>
+                <div className="topbar-two-wrapper">
+                    <Fade top>
+                        <Link className='link' to="/" >
+                            <div className="header">
+                                <img src="http://localhost:3000/images/main_logo.png" alt="" />
                             </div>
-                        }
-                    </div>
-                </Fade>
-                <Fade delay={200} right >
-                    <div className='menuButton' >
-                        <MenuIcon style={{ transform: "scale(3)", cursor: "pointer" }} onClick={toggleDrawer("right", true)} />
-                    </div>
-                </Fade>
-                <SwipeableDrawer
-                    anchor={"right"}
-                    open={state["right"]}
-                    onClose={toggleDrawer("right", false)}
-                    onOpen={toggleDrawer("right", true)}
-                >
-                    {list("right")}
-                </SwipeableDrawer>
+                        </Link>
+                    </Fade>
+                    <Fade delay={200} right>
 
-            </div>
 
-        </TopBarTwoWrpapper>
+                        <div className="menu">
+                            <div className="menues">
+                                <Link className="link" to="/" ><p className="text">Home</p></Link>
+                            </div>
+                            <div ref={ctn} onMouseOver={onHover1} className="menues dropdown-menu1">
+                                <p className="text">Flights</p>
+                                {menu1 &&
+                                    <div onMouseOver={onHover1} onMouseLeave={onLeave1} className="dd-menu1">
+                                        <Link className="link" to="/search-flights" ><p className="text">Search flights</p></Link>
+                                        <Link className="link" to="/book-flight-page" ><p className="text">Booking flights</p></Link>
+                                        <Link className="link" to="/flight-checkout" ><p className="text">Flights Checkout</p></Link>
+                                    </div>
+                                }
+                            </div>
+                            <div ref={ctn2} onMouseOver={onHover2} className="menues dropdown-menu2">
+                                <p className="text">Hotels</p>
+                                {menu2 &&
+                                    <div onMouseOver={onHover2} onMouseLeave={onLeave2} className="dd-menu2">
+                                        <Link className="link" to="/search-hotels" ><p className="text">Search Hotels</p></Link>
+                                        <Link className="link" to="/book-hotel-page" ><p className="text">Booking Hotels</p></Link>
+                                        <Link className="link" to="/hotel-checkout" ><p className="text">Hotels Reservation</p></Link>
+                                    </div>
+                                }
+                            </div>
+                            <div ref={ctn3} onMouseOver={onHover3} onMouseLeave={onLeave3} className="menues dropdown-menu3">
+                                <p className="text">Rent a Car</p>
+                                {menu3 &&
+                                    <div onMouseOver={onHover3} onMouseLeave={onLeave3} className="dd-menu3">
+                                        <Link className="link" to="/search-cars" ><p className="text">Search Car</p></Link>
+                                        <Link className="link" to="/book-car-page" ><p className="text">Booking Car</p></Link>
+                                        <Link className="link" to="/car-checkout" ><p className="text">Car Reservation</p></Link>
+                                    </div>
+                                }
+                            </div>
+                            <div className="menues">
+                                <Link className="link" to="/search-flights" ><p className="text">Holidays</p></Link>
+                            </div>
+                            <div className="menues">
+                                <Link className="link" to="/book-flight-page" ><p className="text">My Bookings</p></Link>
+                            </div>
+                            <div className="menues">
+                                <Link className="link" to="/faq" ><p className="text">Help</p></Link>
+                            </div>
+                            {currentUser ?
+                                <div className="menues">
+                                    <p onClick={show} className="text">Logout</p>
+                                </div> :
+                                <div className="menues">
+                                    <Link className="link" to="/login" ><p className="text">Login</p></Link>
+                                </div>
+                            }
+                        </div>
+                    </Fade>
+                    <Fade delay={200} right >
+                        <div className='menuButton' >
+                            <MenuIcon style={{ transform: "scale(3)", cursor: "pointer" }} onClick={toggleDrawer("right", true)} />
+                        </div>
+                    </Fade>
+                    <SwipeableDrawer
+                        anchor={"right"}
+                        open={state["right"]}
+                        onClose={toggleDrawer("right", false)}
+                        onOpen={toggleDrawer("right", true)}
+                    >
+                        {list("right")}
+                    </SwipeableDrawer>
+
+                </div>
+            </TopBarTwoWrpapper>
+            <PermissionCard open={loggingOut} cancel={clear} />
+
+        </>
     )
 }
 
@@ -351,6 +381,7 @@ const TopBarTwoWrpapper = styled.div`
     display: flex;
     justify-content: center;
     z-index: 20000;
+    margin-bottom: 25px;
     ${mobile({ justifyContent: "flex-start" })}
     .topbar-two-wrapper{
         display: flex;
@@ -363,7 +394,7 @@ const TopBarTwoWrpapper = styled.div`
         align-items: center;
         transition: all 250ms ease;
         cursor: pointer;
-        ${mobile({ paddingLeft: "20px"})}
+        ${mobile({ paddingLeft: "20px" })}
         ::before{
             content: "";
             right: 0;
@@ -371,18 +402,18 @@ const TopBarTwoWrpapper = styled.div`
             height: 4px;
             background-color: #00a99d;
             position: absolute;
-            bottom: -10px;
+            bottom: -30px;
             transition: all 250ms ease-in-out;
         }
         &:hover::before{
-            background-color: tomato;
+            background-color: teal;
         }
     }
     img{
-        width: 190px;
-        object-fit: cover;
+        width: 330px;
+        height: 140px;
         position: relative;
- 
+        ${mobile({ width: "250px", height: "130px" })}
     }
     .menu{
         display: flex;
@@ -399,6 +430,7 @@ const TopBarTwoWrpapper = styled.div`
         flex-direction: column;
         justify-content: center;
         position: relative;
+        z-index: 5000000;
         &::before{
             content: "";
             right: 0;
@@ -422,14 +454,15 @@ const TopBarTwoWrpapper = styled.div`
     }
     .dd-menu1, .dd-menu2, .dd-menu3{
         position: absolute;
-        top: 60px;
+        top: 30px;
         left: -10px;
         white-space: nowrap;
-        padding: 4px 20px 4px 20px;
+        padding: 15px 20px 4px 20px;
         text-align: start;
         background-color: #fff;
         animation: showMenu 0.3s ease;
         z-index: 5000000;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         p{
             border-bottom: 1px solid #E2E2E2;
             padding-bottom: 2px;

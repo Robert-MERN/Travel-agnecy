@@ -930,6 +930,10 @@ header {
 .select2 {
     width: 100%;
 }
+.select{
+    outline: none;
+    border: none;
+}
 
 .select2 *:focus {
     outline: none !important;
@@ -2036,6 +2040,11 @@ header {
     background-image: url("https://axen-trave-test.herokuapp.com/images/slider.jpg");
     background-size: cover;
     z-index: -100;
+}
+@media only screen and (max-width: 600px) {
+    #slider_wrapper{
+        height: 100vh;
+    }
 }
 
 #why1 {
@@ -4788,3 +4797,4 @@ li {
 .returning{
     top: 165px;
 }
+

@@ -17,13 +17,16 @@ import Paypal from './pages/Paypal';
 import Square from './pages/Square';
 import { useSelector } from "react-redux";
 import { selectUser } from "./redux/userSlice"
+import { selectAlert } from "./redux/alertSlice";
+import SimpleAlert from "./components/Alert";
+import SearchFlight from './pages/SearchFlight';
 
 
 
 function App() {
   // trave -agency functions
   const currentUser = useSelector(selectUser);
-  console.log(currentUser);
+  const showAlert = useSelector(selectAlert);
 
   const RequireAuth = (({ children }) => {
     return currentUser ? children : <Navigate to="/login" />
@@ -36,6 +39,9 @@ function App() {
   })
   return (
     <div className="App">
+      {showAlert &&
+        <SimpleAlert />
+      }
       <Router>
         <Routes>
           <Route index element={<Home />} />
@@ -53,7 +59,8 @@ function App() {
           } />
           <Route path="/faq" element={<Faq />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/search-flights" element={<SearchFlights />} />
+          <Route path="/my-flight" element={<SearchFlights />} />
+          <Route path="/search-flights" element={<SearchFlight />} />
           <Route path="/search-hotels" element={<SearchHotels />} />
           <Route path="/login" element={
             <Login>

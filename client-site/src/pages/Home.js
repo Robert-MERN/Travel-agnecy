@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css'
 import TopBarOne from '../components/TopBarOne'
@@ -20,12 +20,23 @@ import Zoom from 'react-reveal/Zoom';
 import { ImAirplane } from "react-icons/im";
 import { FaHotel } from "react-icons/fa";
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import { setAlert, resetAlert } from "../redux/alertSlice";
+import { useDispatch } from 'react-redux'
+import PassengersFiled from "../components/PassengersField";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+
 
 
 
 
 
 function Home() {
+    const dispatch = useDispatch();
     const [header, setHeader] = useState("flight");
     const flightClick = () => {
         setHeader("flight")
@@ -44,7 +55,7 @@ function Home() {
         setDate([
             {
                 startDate: new Date(),
-                endDate: new Date(),
+                endDate: null,
                 key: 'selection'
             }
         ])
@@ -53,7 +64,7 @@ function Home() {
     const [date, setDate] = useState([
         {
             startDate: new Date(),
-            endDate: new Date(),
+            endDate: null,
             key: 'selection'
         }
     ]);
@@ -63,6 +74,8 @@ function Home() {
     }
 
     // making search functionality
+
+    const [extra, setExtra] = useState(false)
     const [value, setValue] = useState("")
     const [valueFromSearch, setValueFromSearch] = useState("");
 
@@ -105,11 +118,39 @@ function Home() {
     }
 
 
-    // other data 
-    const [otherInfo, setOtherInfo] = useState({});
 
-    const otherChange = (e) => {
-        setOtherInfo({ ...otherInfo, [e.target.name]: parseFloat(e.target.value) })
+    // passengers
+    const [passenger, setPassenger] = useState({
+        adults: 1,
+        children: 0,
+        infants: 0,
+        reserve: 0,
+    });
+    const [passengerInput, setPassengerInput] = useState(false);
+    const showPassengerInput = () => {
+        setPassengerInput(!passengerInput)
+    }
+    const hidePassengerInput = () => {
+        setPassengerInput(false)
+    }
+    const passengerCount = (one, two, three, four) => {
+        setPassenger({
+            ...passenger,
+            adults: one,
+            children: two,
+            infants: three,
+            reserve: four,
+        })
+    }
+    const { reserve, ...rest } = passenger;
+    const totalPassengers = Object.values(rest).reduce((a, b) => a + b);
+
+    // cabin
+    const [cabin, setCabin] = useState("");
+    const [cabin2, setCabin2] = useState({});
+    const settingCabin = (e) => {
+        setCabin(e.target.value)
+        setCabin2({ [e.target.name]: e.target.value });
     }
 
     // states for searches
@@ -125,17 +166,23 @@ function Home() {
                 destinationLocationCode: valueFromSearch2.split("-")[0],
                 departureDate: format(date[0].startDate, "yyyy/MM/dd").split("/").join("-"),
                 returnDate: format(date[0].endDate, "yyyy/MM/dd").split("/").join("-"),
-                adults: 1,
-                ...otherInfo
+                ...rest,
+                ...cabin2
             }
             setIsLoading(true)
             try {
-                const res = await axios.post('https://axen-trave-test.herokuapp.com/api/flight/date', finalData)
+                const res = await axios.post('https://axen-trave-test.herokuapp.com/api/flight/date?search=true&first=0&last=9', finalData)
                 setIsLoading(false)
                 navigate("/search-flights", { state: { flightOffers: res.data, details: finalData } });
             } catch (err) {
                 setError(err);
                 setIsLoading(false)
+                dispatch(setAlert("searchFlight"));
+                setTimeout(() => {
+                    dispatch(resetAlert())
+                }, 2500)
+                clearTimeout();
+                console.error(err);
             }
         } else {
             alert("input fields can not be empty.")
@@ -151,7 +198,6 @@ function Home() {
                 destinationLocationCode: valueFromSearch2.split("-")[0],
                 departureDate: format(date[0].startDate, "yyyy/MM/dd").split("/").join("-"),
                 returnDate: format(date[0].endDate, "yyyy/MM/dd").split("/").join("-"),
-                ...otherInfo
             }
             setIsLoading(true)
             try {
@@ -167,6 +213,72 @@ function Home() {
             alert("input fields can not be empty.")
         }
     }
+    useEffect(() => {
+        if (date[0].endDate) {
+            setShowDatePicker("false");
+        }
+    }, [date[0].endDate]);
+
+
+    // onBlur components method 
+    const searchOneRef = useRef();
+    const searchTwoRef = useRef();
+    const dateRef = useRef();
+    const dateRef2 = useRef();
+    const passengerRef = useRef();
+
+
+    useEffect(() => {
+        const handler = (event) => {
+            if (!searchOneRef.current.contains(event.target)) {
+                setValue("");
+            }
+        };
+        document.addEventListener("click", handler);
+        return () => {
+            document.removeEventListener("click", handler);
+        };
+    });
+    useEffect(() => {
+        const handler = (event) => {
+            if (!searchTwoRef.current.contains(event.target)) {
+                setValue2("");
+            }
+        };
+        document.addEventListener("click", handler);
+        return () => {
+            document.removeEventListener("click", handler);
+        };
+    });
+    useEffect(() => {
+        const handler = (event) => {
+            if (!passengerRef.current.contains(event.target)) {
+                setPassengerInput("");
+            }
+        };
+        document.addEventListener("click", handler);
+        return () => {
+            document.removeEventListener("click", handler);
+        };
+    });
+
+
+    // preventing date Popup
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const dateHandleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+
+
     return (
         <>
             <div>
@@ -250,38 +362,40 @@ function Home() {
                                                     <form action="" onSubmit={searchFlight} className="form1">
                                                         <div className="row">
                                                             <div className="col-sm-4 col-md-2">
-                                                                <div className="select1_wrapper">
-                                                                    <label>Flying from:</label>
+                                                                <div ref={searchOneRef} className="select1_wrapper">
+                                                                    <label style={{ fontFamily: "sans-serif" }} >Flying from:</label>
                                                                     <div className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
                                                                         <input onKeyDown={clearOnBackspace} onChange={handleChange} placeholder="Search City or Airport" value={valueFromSearch || value} className="input datepicker" style={{ width: "100%", outline: "none", border: "none" }} />
                                                                         {(value || valueFromSearch) &&
                                                                             <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={clearOnCancel} />
-
                                                                         }
                                                                     </div>
                                                                     {value &&
+
                                                                         <Search check={valueFromSearch2} chracter={value} setValue={changeValueFun} />
+
                                                                     }
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4 col-md-2">
-                                                                <div className="select1_wrapper">
-                                                                    <label>To:</label>
+                                                                <div ref={searchTwoRef} className="select1_wrapper">
+                                                                    <label style={{ fontFamily: "sans-serif" }} >To:</label>
                                                                     <div className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
                                                                         <input onKeyDown={clearOnBackspace2} onChange={handleChange2} placeholder="Search City or Airport" value={valueFromSearch2 || value2} className="input datepicker" style={{ width: "100%", outline: "none" }} />
                                                                         {(value2 || valueFromSearch2) &&
                                                                             <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={clearOnCancel2} />
-
                                                                         }
                                                                     </div>
                                                                     {value2 &&
+
                                                                         <Search chracter={value2} check={valueFromSearch} setValue={changeValueFun2} />
+
                                                                     }
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-4 col-md-2">
+                                                            <div ref={dateRef} className="col-sm-4 col-md-2">
                                                                 <div className="input1_wrapper">
-                                                                    <label>Departing:</label>
+                                                                    <label style={{ fontFamily: "sans-serif" }} >Departing:</label>
                                                                     <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "depart" ? setShowDatePicker("false") : setShowDatePicker("depart")}>
                                                                         <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].startDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                     </div>
@@ -292,54 +406,61 @@ function Home() {
                                                                             moveRangeOnFirstSelection={false}
                                                                             ranges={date}
                                                                             className={showDatePicker}
-                                                                            onBlur={onBlur}
                                                                         />
                                                                     }
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-4 col-md-2">
+                                                            <div ref={dateRef2} className="col-sm-4 col-md-2">
                                                                 <div className="input1_wrapper">
-                                                                    <label>Returning:</label>
+                                                                    <label style={{ fontFamily: "sans-serif" }} >Returning:</label>
                                                                     <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
-                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].endDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
+                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                     </div>
+                                                                </div>
+                                                                {/* <Popover
+                                                                    id={id}
+                                                                    open={open}
+                                                                    anchorEl={anchorEl}
+                                                                    onClose={handleClose}
+                                                                    anchorOrigin={{
+                                                                        vertical: 'top',
+                                                                        horizontal: 'left',
+                                                                    }}
+                                                                >
+                                                                    <Typography sx={{ fontSize: "12px", p: 2 }}>To Select Return Date Click on Departure again</Typography>
+                                                                </Popover> */}
+                                                            </div>
+                                                            <div ref={passengerRef} className="col-sm-4 col-md-1">
+                                                                <div className="select1_wrapper">
+                                                                    <label style={{ fontFamily: "sans-serif" }} >Passengers:</label>
+                                                                    <div onClick={showPassengerInput} className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
+                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} disabled value={totalPassengers} className="input datepicker" />
+                                                                    </div>
+                                                                    {passengerInput &&
+                                                                        <PassengersFiled total={passenger} count={passengerCount} hide={hidePassengerInput} />
+                                                                    }
                                                                 </div>
                                                             </div>
                                                             <div className="col-sm-4 col-md-1">
-                                                                <div className="select1_wrapper">
-                                                                    <label>Adult:</label>
-                                                                    <div className="input1_inner" style={{ display: "flex", alignItems: "center" }} >
-                                                                        <select onChange={otherChange} name="adults" className="select2 select select3" style={{ width: "100%", outline: "none" }}>
-                                                                            <option value="1">1</option>
-                                                                            <option value="2">2</option>
-                                                                            <option value="3">3</option>
-                                                                            <option value="4">4</option>
-                                                                            <option value="5">5</option>
-                                                                            <option value="6">6</option>
-                                                                            <option value="7">7</option>
-                                                                            <option value="8">8</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
+                                                                <FormControl variant="standard" sx={{ m: 1, width: "100%" }}>
+                                                                    <InputLabel style={{ fontSize: "15px", fontFamily: "sans-serif" }} id="demo-simple-select-standard-label">Cabin</InputLabel>
+                                                                    <Select
+                                                                        labelId="demo-simple-select-standard-label"
+                                                                        id="demo-simple-select-standard"
+                                                                        value={cabin}
+                                                                        onChange={settingCabin}
+                                                                        label="Cabin"
+                                                                        name='travelClass'
+                                                                        style={{ fontSize: "13px" }}
+                                                                    >
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"economy"}>Economy</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"business"}>Business Class</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"first"}>First Class</MenuItem>
+                                                                    </Select>
+                                                                </FormControl>
                                                             </div>
-                                                            <div className="col-sm-4 col-md-1">
-                                                                <div className="select1_wrapper">
-                                                                    <label>Child:</label>
-                                                                    <div className="input1_inner" style={{ display: "flex", alignItems: "center" }} >
-                                                                        <select onChange={otherChange} name="children" className="select2 select select3" style={{ width: "100%", outline: "none" }}>
-                                                                            <option selected disabled >0</option>
-                                                                            <option value="1">1</option>
-                                                                            <option value="2">2</option>
-                                                                            <option value="3">3</option>
-                                                                            <option value="4">4</option>
-                                                                            <option value="5">5</option>
-                                                                            <option value="6">6</option>
-                                                                            <option value="7">7</option>
-                                                                            <option value="8">8</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+
+
                                                             <div className="col-sm-4 col-md-2">
                                                                 <div className="button1_wrapper" style={{ display: "flex", alignItems: "center", height: "100%", justifyContent: "center" }} >
                                                                     <button style={{ marginTop: "20px" }} type="submit" className="btn-default btn4">Search</button>
@@ -389,7 +510,7 @@ function Home() {
                                                                     <div className="input1_wrapper">
                                                                         <label>Check-Out:</label>
                                                                         <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
-                                                                            <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].endDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
+                                                                            <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -494,7 +615,7 @@ function Home() {
                                                                     <div className="input1_wrapper">
                                                                         <label>Drop off Date:</label>
                                                                         <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
-                                                                            <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].endDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
+                                                                            <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -838,6 +959,7 @@ function Home() {
 const UL = styled.ul`
     display: flex;
     margin: 0;
+    padding: 0;
     li{
         padding: 12px 25px;
         cursor: pointer;

@@ -2,7 +2,7 @@ import axios from "axios"
 
 const request = ()=>{
     axios.create({
-        baseURL: "http://localhost:9900/api/flight",
+        baseURL: "https://axen-trave-test.herokuapp.com/api/flight",
     })
 }
 

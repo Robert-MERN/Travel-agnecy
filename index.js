@@ -23,3 +23,7 @@ app.get('*', (req, res) => {
 app.listen(process.env.PORT || 9900, ()=>{
     console.log("backend server is ready");
 })
+
+
+
+// "heroku-postbuild": "cd client-site && npm install && npm run build"
