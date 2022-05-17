@@ -290,7 +290,7 @@ function TopBarTwo() {
                     <Fade top>
                         <Link className='link' to="/" >
                             <div className="header">
-                                <img src="http://localhost:3000/images/main_logo.png" alt="" />
+                                <img src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
                             </div>
                         </Link>
                     </Fade>
