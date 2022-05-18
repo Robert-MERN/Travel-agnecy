@@ -94,10 +94,10 @@ function EachFlight({data}) {
                             <div className='flex flex-col justify-center items-center' >
                                 <div className='flex items-center my-1' >
                                     <div className='w-10 h-10 flex justify-center items-center bg-gray-300 rounded-full mx-1 cursor-pointer' >
-                                        <WorkIcon className='text-amber-600' />
+                                        <WorkIcon className='text-amber-600 xs:scale-75' />
                                     </div>
                                     <div className='w-10 h-10 flex justify-center items-center bg-gray-300 rounded-full mx-1 cursor-pointer' >
-                                        <AirlineSeatReclineExtraIcon className='text-blue-800 scale-125' />
+                                        <AirlineSeatReclineExtraIcon className='text-blue-800 scale-125  xs:scale-75' />
                                     </div>
                                 </div>
                                 <div className='xs:hidden items-center justify-between my-1 cursor-pointer lg:flex' >
@@ -139,12 +139,12 @@ function EachFlight({data}) {
                                         <WorkIcon className='text-amber-600' />
                                     </div>
                                     <div className='w-10 h-10 flex justify-center items-center bg-gray-300 rounded-full mx-1 cursor-pointer' >
-                                        <AirlineSeatReclineExtraIcon className='text-blue-800 scale-125' />
+                                        <AirlineSeatReclineExtraIcon className='text-blue-800 scale-125  xs:scale-75' />
                                     </div>
                                 </div>
                                 <div className='xs:hidden items-center justify-between my-1 cursor-pointer lg:flex' >
                                     <div className='w-10 h-10 flex justify-center items-center bg-gray-200 rounded-full mx-1' >
-                                        <QueryBuilderIcon className='text-amber-400 scale-125' />
+                                        <QueryBuilderIcon className='text-amber-400 scale-125  xs:scale-75' />
                                     </div>
                                     <div style={{ fontSize: "11px" }} className='mx-1 text-gray-400 font-semibold' >{in_totalDuration}</div>
                                 </div>
