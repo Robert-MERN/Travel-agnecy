@@ -289,8 +289,8 @@ function TopBarTwo() {
                 <div className="topbar-two-wrapper">
                     <Fade top>
                         <Link className='link' to="/" >
-                            <div className="header">
-                                <img src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
+                            <div className="header sm:hidden lg:flex sm:-translate-x-40 sm:-translate-y-4">
+                                <img className='md:w-96 md:h-40 md:mt-8 xs:w-96 sm:w-80 lg:h-52 lg:mt-2' src="https://axen-trave-test.herokuapp.com/images/main_logo.png" alt="" />
                             </div>
                         </Link>
                     </Fade>
@@ -305,9 +305,7 @@ function TopBarTwo() {
                                 <p className="text">Flights</p>
                                 {menu1 &&
                                     <div onMouseOver={onHover1} onMouseLeave={onLeave1} className="dd-menu1">
-                                        <Link className="link" to="/search-flights" ><p className="text">Search flights</p></Link>
                                         <Link className="link" to="/book-flight-page" ><p className="text">Booking flights</p></Link>
-                                        <Link className="link" to="/flight-checkout" ><p className="text">Flights Checkout</p></Link>
                                     </div>
                                 }
                             </div>
@@ -409,12 +407,7 @@ const TopBarTwoWrpapper = styled.div`
             background-color: teal;
         }
     }
-    img{
-        width: 330px;
-        height: 140px;
-        position: relative;
-        ${mobile({ width: "250px", height: "130px" })}
-    }
+    
     .menu{
         display: flex;
         width: 60rem;

@@ -13,19 +13,27 @@ import RemoveCircleOutlinedIcon from '@material-ui/icons/RemoveCircleOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import ClearIcon from '@material-ui/icons/Clear';
 import EachFlight from '../components/EachFlight';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import axios from "axios";
 import Loading from '../components/Loading'
 import toHoursAndMinutes from "../components/toHoursAndMinutes";
+import { setAlert, resetAlert } from "../redux/alertSlice";
+import { useDispatch } from 'react-redux'
+import PassengersFiled from "../components/PassengersField";
+import Search from '../components/Search';
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css'
+import { format } from "date-fns";
+
 
 function valuetext(value) {
   return `${value}°C`;
 }
 
 function SearchFlight() {
-  const navigate = useNavigate;
+  const dispatch = useDispatch();
   const { state } = useLocation();
-  console.log(state)
   const globalScope = state.flightOffers.defaultFilter
   // page
   const [pageStart, setPageStart] = useState(0);
@@ -295,24 +303,173 @@ function SearchFlight() {
   const [showSort, setShowSort] = useState(false);
   const [showSearchSidebar, setShowSearchSidebar] = useState(false);
   const [showFilterSidebar, setShowFilterSidebar] = useState(false);
-
   const searchSidebarRef = useRef();
 
 
 
+  // // // // // // //        MODIFYING SEARCH FUNCTIONALITY       // // // // // // // //
+  // passengers
+  const [passenger, setPassenger] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    reserve: 0,
+  });
+  const [passengerInput, setPassengerInput] = useState(false);
+  const showPassengerInput = () => {
+    setPassengerInput(!passengerInput)
+  }
+  const hidePassengerInput = () => {
+    setPassengerInput(false)
+  }
+  const passengerCount = (one, two, three, four) => {
+    setPassenger({
+      ...passenger,
+      adults: one,
+      children: two,
+      infants: three,
+      reserve: four,
+    })
+  }
+  const { reserve, ...rest } = passenger;
+  const totalPassengers = Object.values(rest).reduce((a, b) => a + b);
+
+  // cabin
+  const [cabin, setCabin] = useState("");
+  const [cabin2, setCabin2] = useState({});
+  const settingCabin = (e) => {
+    setCabin(e.target.value)
+    setCabin2({ [e.target.name]: e.target.value });
+  }
 
 
-  // useEffect(() => {
-  //   const handler = (event) => {
-  //     if (!searchSidebarRef.current.contains(event.target)) {
-  //       setShowSearchSidebar(false);
-  //     }
-  //   };
-  //   document.addEventListener("click", handler);
-  //   return () => {
-  //     document.removeEventListener("click", handler);
-  //   };
-  // });
+  // making search functionality
+  const [value_s, setValue_s] = useState("")
+  const [valueFromSearch, setValueFromSearch] = useState("");
+
+  const handleChange_s = (e) => {
+    setValue_s(e.target.value)
+  }
+  const changeValueFun = (e) => {
+    setValue_s("");
+    setValueFromSearch(e);
+  }
+  const clearOnBackspace = (e) => {
+    if (e.code === "Backspace" && valueFromSearch) {
+      setValue_s("");
+      setValueFromSearch("")
+    }
+  }
+  const clearOnCancel = () => {
+    setValue_s("");
+    setValueFromSearch("")
+  }
+  // creating second search functionality
+  const [value2_s, setValue2_s] = useState("")
+  const [valueFromSearch2, setValueFromSearch2] = useState("");
+  const handleChange2_s = (e) => {
+    setValue2_s(e.target.value)
+  }
+  const changeValueFun2 = (e) => {
+    setValue2_s("");
+    setValueFromSearch2(e);
+  }
+  const clearOnBackspace2 = (e) => {
+    if (e.code === "Backspace" && valueFromSearch2) {
+      setValue2_s("");
+      setValueFromSearch2("")
+    }
+  }
+  const clearOnCancel2 = () => {
+    setValue2_s("");
+    setValueFromSearch2("")
+  }
+
+  // creating date functionality
+  const [date, setDate] = useState([
+    {
+      startDate: new Date(),
+      endDate: null,
+      key: 'selection'
+    }
+  ]);
+  const [showDatePicker, setShowDatePicker] = useState("false");
+  const onBlur = () => {
+    setShowDatePicker("false");
+  }
+
+  const minMaxDate = new Date();
+  const threeDaysLater = new Date(minMaxDate.setDate(minMaxDate.getDate() + 3));
+  const threeMonthsLater = new Date(minMaxDate.setMonth(minMaxDate.getMonth() + 3));
+  useEffect(() => {
+    if (date[0].endDate !== null) {
+      if (new Date(date[0].endDate).getTime() !== new Date(date[0].startDate).getTime()) {
+        setShowDatePicker("false");
+      }
+    }
+  }, [date[0].endDate]);
+
+
+  // onBlur components method 
+  const searchOneRef = useRef();
+  const searchTwoRef = useRef();
+  const dateRef = useRef();
+  const dateRef2 = useRef();
+  const passengerRef = useRef();
+
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (!searchOneRef.current.contains(event.target)) {
+        setValue_s("");
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => {
+      document.removeEventListener("click", handler);
+    };
+  });
+  useEffect(() => {
+    const handler = (event) => {
+      if (!searchTwoRef.current.contains(event.target)) {
+        setValue2_s("");
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => {
+      document.removeEventListener("click", handler);
+    };
+  });
+  useEffect(() => {
+    const handler = (event) => {
+      if (!passengerRef.current.contains(event.target)) {
+        setPassengerInput("");
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => {
+      document.removeEventListener("click", handler);
+    };
+  });
+
+  // finally searching
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const res = await axios.post(`https://axen-trave-test.herokuapp.com/api/flight/date?search=true&first=0&last=9`);
+      setFlights(res.data.lastSearch);
+      setIsLoading(false)
+    } catch (err) {
+      setError(err);
+      setIsLoading(false)
+      dispatch(setAlert("searchFlight"));
+      setTimeout(() => {
+        dispatch(resetAlert())
+      }, 2500)
+      clearTimeout();
+    }
+  }
 
 
   return (
@@ -323,9 +480,7 @@ function SearchFlight() {
         <div className="row">
           <div className='col-sm-4 col-md-3 px-4 hidden-xs hidden-sm'>
             <div style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }} className="px-4 py-3 rounded-lg" >
-
-
-              <div ref={filter} style={filterOption ? { height: "3.5rem" } : { height: filter.current?.scrollHeight + "px" }} className="row px-3 tex-gray-200 hover:text-teal-400 transition-all mt-3 mb-5 overflow-hidden py-1">
+              <div ref={filter} style={filterOption ? { height: "3.8rem" } : { height: filter.current?.scrollHeight + "px" }} className="row px-3 tex-gray-200 hover:text-teal-400 transition-all mt-3 mb-5 overflow-hidden py-1">
                 <div className="flex justify-between items-center cursor-pointer text-2xl font-semibold border-bottom" onClick={() => setfilterOption(!filterOption)}>
                   Modify Search
                   {filterOption ?
@@ -335,61 +490,96 @@ function SearchFlight() {
 
                   }
                 </div>
-                <div className='text-gray-500 py-3' >
+                <form onSubmit={handleSubmit} className='text-gray-500 py-3' >
                   <div className='mt-2' >
                     <p className='h4' >Where</p>
                     <div className='h6 mt-4 text-gray-300' >
-                      <div>
+                      <div ref={searchOneRef}>
                         LEAVING FROM
                         <input
+                          required
                           type="text"
+                          onKeyDown={clearOnBackspace} onChange={handleChange_s}
+                          value={valueFromSearch || value_s}
                           className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
                           id="exampleFormControlInput3"
-                          placeholder="Default input"
+                          placeholder={state.details.originLocationCode}
                         />
+                        {value_s &&
+                          <Search check={valueFromSearch2} chracter={value_s} setValue={changeValueFun} />
+                        }
                       </div>
-                      <div>
+                      <div ref={searchTwoRef}>
                         GOING TO
                         <input
+                          required
                           type="text"
+                          value={valueFromSearch2 || value2_s}
+                          onKeyDown={clearOnBackspace2} onChange={handleChange2_s}
                           className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none"
                           id="exampleFormControlInput3"
-                          placeholder="Default input"
+                          placeholder={state.details.destinationLocationCode}
                         />
+                        {value2_s &&
+                          <Search chracter={value2_s} check={valueFromSearch} setValue={changeValueFun2} />
+                        }
                       </div>
                     </div>
                   </div>
                   <div className='mt-5' >
                     <p className='h4' >When</p>
                     <div className='h6 mt-4 text-gray-300' >
-                      <div>
+                      <div className='relative' onClick={() => showDatePicker === "depart" ? setShowDatePicker("false") : setShowDatePicker("depart")}  >
                         DEPARTING ON
                         <input
+                          required
                           type="text"
-                          className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
+                          className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent relative"
                           id="exampleFormControlInput3"
-                          placeholder="Default input"
+                          value={date[0].startDate ? format(date[0].startDate, "MM/dd/yyyy") : ""}
+                          placeholder={state.details.departureDate}
                         />
                       </div>
-                      <div>
+                      {showDatePicker !== "false" &&
+                        <DateRange
+                          editableDateInputs={true}
+                          onChange={item => setDate([item.selection])}
+                          moveRangeOnFirstSelection={false}
+                          ranges={date}
+                          className={`absolute z-50`}
+                          minDate={threeDaysLater}
+                          maxDate={threeMonthsLater}
+                          value={date[0].startDate ? format(date[0].startDate, "MM/dd/yyyy") : ""}
+                          retainEndDateOnFirstSelection={false}
+                        />
+                      }
+                      <div style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
                         ARRIVAL
                         <input
+                          required
                           type="text"
-                          className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none"
+                          className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent"
                           id="exampleFormControlInput3"
-                          placeholder="Default input"
+                          value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""}
+                          placeholder={state.details.returnDate}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className='mt-5' >
+                  <div ref={passengerRef} className='mt-5' >
                     <p className='h4' >Passenger</p>
                     <input
+                      required
                       type="text"
-                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
+                      onClick={showPassengerInput}
+                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent"
                       id="exampleFormControlInput3"
-                      placeholder="Default input"
+                      placeholder={state.details.adults + state.details.infants + state.details.children}
+                      value={totalPassengers ? totalPassengers : ""}
                     />
+                    {passengerInput &&
+                      <PassengersFiled total={passenger} count={passengerCount} hide={hidePassengerInput} />
+                    }
 
                   </div>
                   <div className='mt-5' >
@@ -397,25 +587,21 @@ function SearchFlight() {
                     <div className='h6 mt-4 text-gray-300'>
                       <div>
                         CLASS
-                        <select class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
-                          <option selected>Economy</option>
-                          <option value="1">Premium Economy</option>
-                          <option value="2">Business</option>
-                          <option value="3">First</option>
-                        </select>
-                      </div>
-                      <div>
-                        AIRLINES
-                        <select class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
-                          <option selected>All Airlines</option>
-                          <option value="1">Premium Economy</option>
-                          <option value="2">Business</option>
-                          <option value="3">First</option>
+                        <select required onChange={settingCabin} name="travelClass" class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
+                          <option value="ECONOMY">Economy</option>
+                          <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                          <option value="BUSINESS">Business</option>
+                          <option value="FIRST">First</option>
                         </select>
                       </div>
                     </div>
                   </div>
-                </div>
+                  <div className='mt-5' >
+                    <button type="submit" class="my-3 px-3 py-2 w-100 bg-teal-600 hover:bg-teal-500 text-white cursor-pointer transition ease-in-out">
+                      Search
+                    </button>
+                  </div>
+                </form>
               </div>
 
               <div ref={filter3} style={filterOption3 ? { height: "3.5rem" } : { height: filter3.current?.scrollHeight + "px" }} className="row px-3 tex-gray-200 hover:text-teal-400 transition-all mt-1 mb-5 overflow-hidden py-1">
@@ -618,7 +804,7 @@ function SearchFlight() {
                 Sort
               </div>
               <div onClick={() => setShowSearchSidebar(true)} className="col-xs-4 cursor-pointer bg-teal-500 h-20 flex justify-center items-center hover:bg-teal-400 transition-all text-white text-2xl">
-                <MdSearch className='scale-100 mr-5' />
+                <MdSearch className='xs:scale-500 sm:scale-150 mr-5' />
                 Search
 
               </div>
@@ -652,7 +838,7 @@ function SearchFlight() {
               <div onClick={active3} className="col-lg cursor-pointer mt-2 mb-6">
                 <div className="flex w-100 justify-between border hover:bg-gray-200 transition-all">
                   <div className="flex items-end px-2">
-                    <p className='text-secondary h6' >Duration</p>
+                    <p className='text-secondary h6' >Duration (Fastest to Long)</p>
                   </div>
                   <div className={`flex flex-col justify-center py-1 px-3 text-white transition-all ${sortActive3 ? "bg-teal-500" : "bg-gray-400"}`}>
                     <ArrowDropUpIcon />
@@ -682,61 +868,96 @@ function SearchFlight() {
               Modify Search
               <ClearIcon onClick={() => setShowSearchSidebar(false)} className='text-teal-600 hover:text-teal-500 transition-all' style={{ transform: "scale(1.8)" }} />
             </div>
-            <div className='text-gray-500 py-3' >
+            <form onSubmit={handleSubmit} className='text-gray-500 py-3' >
               <div className='mt-2' >
                 <p className='h4' >Where</p>
                 <div className='h6 mt-4 text-gray-300' >
-                  <div>
+                  <div ref={searchOneRef}>
                     LEAVING FROM
                     <input
+                      required
                       type="text"
+                      onKeyDown={clearOnBackspace} onChange={handleChange_s}
+                      value={valueFromSearch || value_s}
                       className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
                       id="exampleFormControlInput3"
-                      placeholder="Default input"
+                      placeholder={state.details.originLocationCode}
                     />
+                    {value_s &&
+                      <Search check={valueFromSearch2} chracter={value_s} setValue={changeValueFun} />
+                    }
                   </div>
-                  <div>
+                  <div ref={searchTwoRef}>
                     GOING TO
                     <input
+                      required
                       type="text"
+                      value={valueFromSearch2 || value2_s}
+                      onKeyDown={clearOnBackspace2} onChange={handleChange2_s}
                       className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none"
                       id="exampleFormControlInput3"
-                      placeholder="Default input"
+                      placeholder={state.details.destinationLocationCode}
                     />
+                    {value2_s &&
+                      <Search chracter={value2_s} check={valueFromSearch} setValue={changeValueFun2} />
+                    }
                   </div>
                 </div>
               </div>
               <div className='mt-5' >
                 <p className='h4' >When</p>
                 <div className='h6 mt-4 text-gray-300' >
-                  <div>
+                  <div className='relative' onClick={() => showDatePicker === "depart" ? setShowDatePicker("false") : setShowDatePicker("depart")}  >
                     DEPARTING ON
                     <input
+                      required
                       type="text"
-                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
+                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent relative"
                       id="exampleFormControlInput3"
-                      placeholder="Default input"
+                      value={date[0].startDate ? format(date[0].startDate, "MM/dd/yyyy") : ""}
+                      placeholder={state.details.departureDate}
                     />
                   </div>
-                  <div>
+                  {showDatePicker !== "false" &&
+                    <DateRange
+                      editableDateInputs={true}
+                      onChange={item => setDate([item.selection])}
+                      moveRangeOnFirstSelection={false}
+                      ranges={date}
+                      className={`absolute z-50`}
+                      minDate={threeDaysLater}
+                      maxDate={threeMonthsLater}
+                      value={date[0].startDate ? format(date[0].startDate, "MM/dd/yyyy") : ""}
+                      retainEndDateOnFirstSelection={false}
+                    />
+                  }
+                  <div style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
                     ARRIVAL
                     <input
+                      required
                       type="text"
-                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none"
+                      className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent"
                       id="exampleFormControlInput3"
-                      placeholder="Default input"
+                      value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""}
+                      placeholder={state.details.returnDate}
                     />
                   </div>
                 </div>
               </div>
-              <div className='mt-5' >
+              <div ref={passengerRef} className='mt-5' >
                 <p className='h4' >Passenger</p>
                 <input
+                  required
                   type="text"
-                  className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none"
+                  onClick={showPassengerInput}
+                  className="form-control block w-100 my-3 px-3 py-1.5 text-base font-normal text-gray-700 focus:bg-gray-200 bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700  focus:border-teal-500 focus:outline-none cursor-pointer caret-transparent"
                   id="exampleFormControlInput3"
-                  placeholder="Default input"
+                  placeholder={state.details.adults + state.details.infants + state.details.children}
+                  value={totalPassengers ? totalPassengers : ""}
                 />
+                {passengerInput &&
+                  <PassengersFiled total={passenger} count={passengerCount} hide={hidePassengerInput} />
+                }
 
               </div>
               <div className='mt-5' >
@@ -744,37 +965,30 @@ function SearchFlight() {
                 <div className='h6 mt-4 text-gray-300'>
                   <div>
                     CLASS
-                    <select class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
-                      <option selected>Economy</option>
-                      <option value="1">Premium Economy</option>
-                      <option value="2">Business</option>
-                      <option value="3">First</option>
-                    </select>
-                  </div>
-                  <div>
-                    AIRLINES
-                    <select class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
-                      <option selected>All Airlines</option>
-                      <option value="1">Premium Economy</option>
-                      <option value="2">Business</option>
-                      <option value="3">First</option>
+                    <select required onChange={settingCabin} name="travelClass" class="custom-select my-3 h5 border border-solid border-gray-300 focus:bg-gray-200  focus:outline-none px-3 py-1.5 w-100 focus:border-teal-500 focus:text-gray-700 transition ease-in-out">
+                      <option value="ECONOMY">Economy</option>
+                      <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                      <option value="BUSINESS">Business</option>
+                      <option value="FIRST">First</option>
                     </select>
                   </div>
                 </div>
               </div>
-            </div>
+              <div className='mt-5' >
+                <button type="submit" class="my-3 px-3 py-2 w-100 bg-teal-600 hover:bg-teal-500 text-white cursor-pointer transition ease-in-out">
+                  Search
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
       <div style={{ background: "rgba(0,0,0,0.3)" }} className={`rounded-lg duration-500 transition-all fixed w-screen h-screen inset-0 ${showFilterSidebar ? "-translate-x-0" : "-translate-x-full"}`}>
         <div ref={searchSidebarRef} className={`w-9/12 bg-white border h-full px-6 overflow-y-scroll`}>
-        <div className="flex justify-between items-center cursor-pointer text-2xl font-semibold border-bottom mt-4">
-          Filters
-          <ClearIcon onClick={() => setShowFilterSidebar(false)} className='text-teal-600 hover:text-teal-500 transition-all' style={{ transform: "scale(1.8)" }} />
-        </div>
-          <div ref={filter} style={filterOption ? { height: "3.5rem" } : { height: filter.current?.scrollHeight + "px" }} className="row px-3 tex-gray-200 hover:text-teal-400 transition-all mt-3 mb-5 overflow-hidden py-1">
+          <div className="flex justify-between items-center cursor-pointer text-2xl font-semibold border-bottom mt-3 mb-5">
+            Filters
+            <ClearIcon onClick={() => setShowFilterSidebar(false)} className='text-teal-600 hover:text-teal-500 transition-all' style={{ transform: "scale(1.8)" }} />
           </div>
-
           <div ref={filter3} style={filterOption3 ? { height: "3.5rem" } : { height: filter3.current?.scrollHeight + "px" }} className="row px-3 tex-gray-200 hover:text-teal-400 transition-all mt-1 mb-5 overflow-hidden py-1">
             <div className="flex justify-between items-center cursor-pointer text-2xl font-semibold border-bottom" onClick={() => setfilterOption3(!filterOption3)}>
               Flight Stops

@@ -1,26 +1,29 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     screens: {
-      'xs': '375px',
-      'sm': '640px',
-      // => @media (min-width: 640px) { ... }
-
-      'md': '768px',
-      // => @media (min-width: 768px) { ... }
-
-      'lg': '1024px',
-      // => @media (min-width: 1024px) { ... }
-
-      'xl': '1280px',
-      // => @media (min-width: 1280px) { ... }
-
-      '2xl': '1536px',
-      // => @media (min-width: 1536px) { ... }
+      'xs': '200px',
+      ...defaultTheme.screens,
     },
-    extend: {},
+    scale: {
+      '0': '0',
+      '25': '.25',
+      '50': '.5',
+      '75': '.75',
+      '90': '.9',
+      '95': '.95',
+      '100': '1',
+      '105': '1.05',
+      '110': '1.1',
+      '125': '1.25',
+      '150': '1.5',
+      '200': '2',
+      '500': '5'
+    }
   },
+  variants: {},
   plugins: [],
 }

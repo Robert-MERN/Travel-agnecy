@@ -27,8 +27,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
 
 
 
@@ -73,9 +71,18 @@ function Home() {
         setShowDatePicker("false");
     }
 
-    // making search functionality
+    const minMaxDate = new Date();
+    const threeDaysLater = new Date(minMaxDate.setDate(minMaxDate.getDate() + 3));
+    const threeMonthsLater = new Date(minMaxDate.setMonth(minMaxDate.getMonth() + 3));
+    useEffect(() => {
+        if (date[0].endDate !== null) {
+            if (new Date(date[0].endDate).getTime() !== new Date(date[0].startDate).getTime()) {
+                setShowDatePicker("false");
+            }
+        }
+    }, [date[0].endDate]);
 
-    const [extra, setExtra] = useState(false)
+    // making search functionality
     const [value, setValue] = useState("")
     const [valueFromSearch, setValueFromSearch] = useState("");
 
@@ -182,7 +189,6 @@ function Home() {
                     dispatch(resetAlert())
                 }, 2500)
                 clearTimeout();
-                console.error(err);
             }
         } else {
             alert("input fields can not be empty.")
@@ -212,12 +218,8 @@ function Home() {
         } else {
             alert("input fields can not be empty.")
         }
-    }
-    useEffect(() => {
-        if (date[0].endDate) {
-            setShowDatePicker("false");
-        }
-    }, [date[0].endDate]);
+    };
+
 
 
     // onBlur components method 
@@ -406,6 +408,9 @@ function Home() {
                                                                             moveRangeOnFirstSelection={false}
                                                                             ranges={date}
                                                                             className={showDatePicker}
+                                                                            minDate={threeDaysLater}
+                                                                            maxDate={threeMonthsLater}
+                                                                            retainEndDateOnFirstSelection={false}
                                                                         />
                                                                     }
                                                                 </div>
@@ -453,9 +458,10 @@ function Home() {
                                                                         name='travelClass'
                                                                         style={{ fontSize: "13px" }}
                                                                     >
-                                                                        <MenuItem style={{ fontSize: "14px" }} value={"economy"}>Economy</MenuItem>
-                                                                        <MenuItem style={{ fontSize: "14px" }} value={"business"}>Business Class</MenuItem>
-                                                                        <MenuItem style={{ fontSize: "14px" }} value={"first"}>First Class</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"ECONOMY"}>Economy</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"PREMIUM_ECONOMY"}>Premium Economy</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"BUSINESS"}>Business Class</MenuItem>
+                                                                        <MenuItem style={{ fontSize: "14px" }} value={"FIRST"}>First Class</MenuItem>
                                                                     </Select>
                                                                 </FormControl>
                                                             </div>
@@ -498,9 +504,13 @@ function Home() {
                                                                             <DateRange
                                                                                 editableDateInputs={true}
                                                                                 onChange={item => setDate([item.selection])}
-                                                                                moveRangeOnFirstSelection={false}
+                                                                                moveRangeOnFirstSelection={true}
                                                                                 ranges={date}
                                                                                 className={showDatePicker}
+                                                                                minDate={new Date()}
+                                                                                monthDisplayFormat={true}
+
+                                                                                retainEndDateOnFirstSelection={false}
 
                                                                             />
                                                                         }
