@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import alertSlice from "./alertSlice";
+import refreshSlice from "./refreshSlice";
 
 import {
     persistStore,
@@ -22,7 +23,8 @@ const persistConfig = {
   }
 const rootReducer = combineReducers({
   user: userReducer,
-  alert: alertSlice
+  alert: alertSlice,
+  refresh: refreshSlice,
 })
 const persistedReducer = persistReducer(persistConfig, rootReducer)
   

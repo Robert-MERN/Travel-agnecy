@@ -134,28 +134,28 @@ function BookingFlightPage() {
                                     <div className="input2_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "12px" }}>First Name</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input required onChange={onChange} name='firstName' type="text" className="form-control" placeholder="Michael" spellCheck="false" />
+                                            <input autoComplete='off' required onChange={onChange} name='firstName' type="text" className="form-control" placeholder="Michael" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
                                     <div className="input2_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "12px" }}>Last Name</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}  >
-                                            <input onChange={onChange} required name='lastName' type="text" className="form-control" placeholder="Berkovich" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} required name='lastName' type="text" className="form-control" placeholder="Berkovich" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
                                     <div className="select1_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "15px" }}>Date of Birth</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} required name="dateOfBirth" type="date" className="form-control" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} required name="dateOfBirth" type="date" className="form-control" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
                                     <div className="input2_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "12px" }}>Your Email</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} required name='email' type="email" className="form-control" placeholder="your@email.com" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} required name='email' type="email" className="form-control" placeholder="your@email.com" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
@@ -177,7 +177,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required name="birthPlace" placeholder="Search city" onKeyDown={(e) => clearOnBackspace(e, "birthPlace")} onChange={(e) => setValue(e.target.value)} type="text" className="form-control" value={value || userInfo.birthPlace} spellCheck="false" />
+                                                    <input autoComplete='off' required name="birthPlace" placeholder="Search city" onKeyDown={(e) => clearOnBackspace(e, "birthPlace")} onChange={(e) => setValue(e.target.value)} type="text" className="form-control" value={value || userInfo.birthPlace} spellCheck="false" />
                                                     {(value || userInfo.birthPlace) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(1, "birthPlace")} />
                                                     }
@@ -194,7 +194,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required name="birthPlace" placeholder="Search city" onKeyDown={(e) => clearOnBackspace(e, "issuanceLocation")} onChange={(e) => setValue2(e.target.value)} type="text" className="form-control" value={value2 || userInfo.issuanceLocation} spellCheck="false" />
+                                                    <input autoComplete='off' required name="birthPlace" placeholder="Search city" onKeyDown={(e) => clearOnBackspace(e, "issuanceLocation")} onChange={(e) => setValue2(e.target.value)} type="text" className="form-control" value={value2 || userInfo.issuanceLocation} spellCheck="false" />
                                                     {(value2 || userInfo.issuanceLocation) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(2, "issuanceLocation")} />
                                                     }
@@ -209,13 +209,13 @@ function BookingFlightPage() {
                                     <div className="select1_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "15px" }}>Issuance Date</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} required name="issuanceDate" type="date" className="form-control" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} required name="issuanceDate" type="date" className="form-control" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="select1_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "15px" }}>Passport Number</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} placeholder="00000000" required name="passportNumber" type="phone" className="form-control" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} placeholder="00000000" required name="passportNumber" type="phone" className="form-control" spellCheck="false" />
                                         </div>
                                     </div>
 
@@ -225,7 +225,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="+92" name="countryCallingCode" onKeyDown={(e) => clearOnBackspace(e, "countryCallingCode")} onChange={(e) => setValue8(e.target.value)} type="text" className="form-control" value={value8 || userInfo.countryCallingCode} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="+92" name="countryCallingCode" onKeyDown={(e) => clearOnBackspace(e, "countryCallingCode")} onChange={(e) => setValue8(e.target.value)} type="text" className="form-control" value={value8 || userInfo.countryCallingCode} spellCheck="false" />
                                                     {(value8 || userInfo.countryCallingCode) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(8, "countryCallingCode")} />
                                                     }
@@ -240,7 +240,7 @@ function BookingFlightPage() {
                                     <div className="select1_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "15px" }}>Phone Number</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} placeholder="0311-2396511" required name="number" type="phone" className="form-control" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} placeholder="0311-2396511" required name="number" type="phone" className="form-control" spellCheck="false" />
                                         </div>
                                     </div>
 
@@ -248,7 +248,7 @@ function BookingFlightPage() {
                                     <div className="select1_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "15px" }}>Expiry Date</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} required name="expiryDate" type="date" className="form-control" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} required name="expiryDate" type="date" className="form-control" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
@@ -257,7 +257,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="Search Country" name="issuanceCountry" onKeyDown={(e) => clearOnBackspace(e, "issuanceCountry")} onChange={(e) => setValue3(e.target.value)} type="text" className="form-control" value={value3 || userInfo.issuanceCountry} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="Search Country" name="issuanceCountry" onKeyDown={(e) => clearOnBackspace(e, "issuanceCountry")} onChange={(e) => setValue3(e.target.value)} type="text" className="form-control" value={value3 || userInfo.issuanceCountry} spellCheck="false" />
                                                     {(value3 || userInfo.issuanceCountry) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(3, "issuanceCountry")} />
                                                     }
@@ -275,7 +275,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="Search Country" name="validityCountry" onKeyDown={(e) => clearOnBackspace(e, "validityCountry")} onChange={(e) => setValue4(e.target.value)} type="text" className="form-control" value={value4 || userInfo.validityCountry} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="Search Country" name="validityCountry" onKeyDown={(e) => clearOnBackspace(e, "validityCountry")} onChange={(e) => setValue4(e.target.value)} type="text" className="form-control" value={value4 || userInfo.validityCountry} spellCheck="false" />
                                                     {(value4 || userInfo.validityCountry) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(4, "validityCountry")} />
                                                     }
@@ -292,7 +292,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="Search Country" name="nationality" onKeyDown={(e) => clearOnBackspace(e, "nationality")} onChange={(e) => setValue5(e.target.value)} type="text" className="form-control" value={value5 || userInfo.nationality} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="Search Country" name="nationality" onKeyDown={(e) => clearOnBackspace(e, "nationality")} onChange={(e) => setValue5(e.target.value)} type="text" className="form-control" value={value5 || userInfo.nationality} spellCheck="false" />
                                                     {(value5 || userInfo.nationality) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(5, "nationality")} />
                                                     }
@@ -321,7 +321,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="Search Country" name="billingCountry" onKeyDown={(e) => clearOnBackspace(e, "billingCountry")} onChange={(e) => setValue6(e.target.value)} type="text" className="form-control" value={value6 || userInfo.billingCountry} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="Search Country" name="billingCountry" onKeyDown={(e) => clearOnBackspace(e, "billingCountry")} onChange={(e) => setValue6(e.target.value)} type="text" className="form-control" value={value6 || userInfo.billingCountry} spellCheck="false" />
                                                     {(value6 || userInfo.billingCountry) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(6, "billingCountry")} />
                                                     }
@@ -338,7 +338,7 @@ function BookingFlightPage() {
                                         <div className="col-md-7  relative" style={{ paddingRight: "0", paddingLeft: "0" }} >
                                             <div className="select1_wrapper">
                                                 <div className="input1_inner" style={{ border: "none", boxShadow: "none", display: "flex", alignItems: "center", cursor: "text" }} >
-                                                    <input required placeholder="Search City" name="billingCity" onKeyDown={(e) => clearOnBackspace(e, "billingCity")} onChange={(e) => setValue7(e.target.value)} type="text" className="form-control" value={value7 || userInfo.billingCity} spellCheck="false" />
+                                                    <input autoComplete='off' required placeholder="Search City" name="billingCity" onKeyDown={(e) => clearOnBackspace(e, "billingCity")} onChange={(e) => setValue7(e.target.value)} type="text" className="form-control" value={value7 || userInfo.billingCity} spellCheck="false" />
                                                     {(value7 || userInfo.billingCity) &&
                                                         <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={() => clearOnCancel(7, "billingCity")} />
                                                     }
@@ -353,7 +353,7 @@ function BookingFlightPage() {
                                     <div className="input2_wrapper">
                                         <label className="col-md-5" style={{ paddingLeft: "0", paddingTop: "12px" }}>Address</label>
                                         <div className="col-md-7 relative" style={{ paddingRight: "0", paddingLeft: "0" }}>
-                                            <input onChange={onChange} name="address" required type="text" className="form-control" placeholder="5c3/5" spellCheck="false" />
+                                            <input autoComplete='off' onChange={onChange} name="address" required type="text" className="form-control" placeholder="5c3/5" spellCheck="false" />
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>

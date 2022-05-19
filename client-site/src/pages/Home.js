@@ -34,6 +34,7 @@ import Select from '@mui/material/Select';
 
 
 function Home() {
+    
     const dispatch = useDispatch();
     const [header, setHeader] = useState("flight");
     const flightClick = () => {
@@ -367,7 +368,7 @@ function Home() {
                                                                 <div ref={searchOneRef} className="select1_wrapper">
                                                                     <label style={{ fontFamily: "sans-serif" }} >Flying from:</label>
                                                                     <div className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
-                                                                        <input onKeyDown={clearOnBackspace} onChange={handleChange} placeholder="Search City or Airport" value={valueFromSearch || value} className="input datepicker" style={{ width: "100%", outline: "none", border: "none" }} />
+                                                                        <input autoComplete='off'  onKeyDown={clearOnBackspace} onChange={handleChange} placeholder="Search City or Airport" value={valueFromSearch || value} className="input datepicker" style={{ width: "100%", outline: "none", border: "none" }} />
                                                                         {(value || valueFromSearch) &&
                                                                             <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={clearOnCancel} />
                                                                         }
@@ -383,7 +384,7 @@ function Home() {
                                                                 <div ref={searchTwoRef} className="select1_wrapper">
                                                                     <label style={{ fontFamily: "sans-serif" }} >To:</label>
                                                                     <div className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
-                                                                        <input onKeyDown={clearOnBackspace2} onChange={handleChange2} placeholder="Search City or Airport" value={valueFromSearch2 || value2} className="input datepicker" style={{ width: "100%", outline: "none" }} />
+                                                                        <input autoComplete='off'  onKeyDown={clearOnBackspace2} onChange={handleChange2} placeholder="Search City or Airport" value={valueFromSearch2 || value2} className="input datepicker" style={{ width: "100%", outline: "none" }} />
                                                                         {(value2 || valueFromSearch2) &&
                                                                             <CancelIcon style={{ color: "#3BA0A9", cursor: "pointer", marginRight: "2px" }} onClick={clearOnCancel2} />
                                                                         }
@@ -399,7 +400,7 @@ function Home() {
                                                                 <div className="input1_wrapper">
                                                                     <label style={{ fontFamily: "sans-serif" }} >Departing:</label>
                                                                     <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "depart" ? setShowDatePicker("false") : setShowDatePicker("depart")}>
-                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].startDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
+                                                                        <input readOnly style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={`${format(date[0].startDate, "MM/dd/yyyy")}`} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                     </div>
                                                                     {showDatePicker !== "false" &&
                                                                         <DateRange
@@ -419,27 +420,15 @@ function Home() {
                                                                 <div className="input1_wrapper">
                                                                     <label style={{ fontFamily: "sans-serif" }} >Returning:</label>
                                                                     <div className="input1_inner" style={{ cursor: "pointer" }} onClick={() => showDatePicker === "return" ? setShowDatePicker("false") : setShowDatePicker("return")}>
-                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""} className="input datepicker" placeholder="mm/dd/yyyy" />
+                                                                        <input readOnly style={{ caretColor: "transparent", cursor: "pointer" }} type="text" value={date[0].endDate ? format(date[0].endDate, "MM/dd/yyyy") : ""} className="input datepicker" placeholder="mm/dd/yyyy" />
                                                                     </div>
                                                                 </div>
-                                                                {/* <Popover
-                                                                    id={id}
-                                                                    open={open}
-                                                                    anchorEl={anchorEl}
-                                                                    onClose={handleClose}
-                                                                    anchorOrigin={{
-                                                                        vertical: 'top',
-                                                                        horizontal: 'left',
-                                                                    }}
-                                                                >
-                                                                    <Typography sx={{ fontSize: "12px", p: 2 }}>To Select Return Date Click on Departure again</Typography>
-                                                                </Popover> */}
                                                             </div>
                                                             <div ref={passengerRef} className="col-sm-4 col-md-1">
                                                                 <div className="select1_wrapper">
                                                                     <label style={{ fontFamily: "sans-serif" }} >Passengers:</label>
                                                                     <div onClick={showPassengerInput} className="input1_inner" style={{ display: "flex", alignItems: "center", cursor: "text" }} >
-                                                                        <input style={{ caretColor: "transparent", cursor: "pointer" }} disabled value={totalPassengers} className="input datepicker" />
+                                                                        <input readOnly autoComplete='off' style={{ caretColor: "transparent", cursor: "pointer" }} disabled value={totalPassengers} className="input datepicker" />
                                                                     </div>
                                                                     {passengerInput &&
                                                                         <PassengersFiled total={passenger} count={passengerCount} hide={hidePassengerInput} />

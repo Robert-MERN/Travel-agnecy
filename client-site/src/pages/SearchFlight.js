@@ -18,7 +18,8 @@ import axios from "axios";
 import Loading from '../components/Loading'
 import toHoursAndMinutes from "../components/toHoursAndMinutes";
 import { setAlert, resetAlert } from "../redux/alertSlice";
-import { useDispatch } from 'react-redux'
+import { setRefreshs, selectRefresh } from "../redux/refreshSlice";
+import { useDispatch, useSelector } from 'react-redux'
 import PassengersFiled from "../components/PassengersField";
 import Search from '../components/Search';
 import { DateRange } from 'react-date-range';
@@ -27,6 +28,7 @@ import 'react-date-range/dist/theme/default.css'
 import { format } from "date-fns";
 import CancelIcon from '@material-ui/icons/Cancel';
 import { useNavigate } from "react-router-dom";
+import RefreshPage from "../components/RefreshPage";
 
 
 
@@ -38,7 +40,22 @@ function SearchFlight() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { state } = useLocation();
-  const globalScope = state.flightOffers.defaultFilter
+  const globalScope = state.flightOffers.defaultFilter;
+  // refresh page after 5 minutes to keep prices legit of flight
+  const refreshState = useSelector(selectRefresh);
+  useEffect(() => {
+    if (refreshState === "false") {
+      setTimeout(() => {
+        dispatch(setRefreshs("true"));
+      }, 5 * 60 * 1000);
+    }
+  }, [refreshState])
+  const refreshLoad = () => {
+    setIsLoading(true);
+  }
+  const resetRefreshLoad = () => {
+    setIsLoading(false);
+  }
   // page
   const [pageStart, setPageStart] = useState(0);
   const [pageLast, setPageLast] = useState(9);
@@ -323,13 +340,11 @@ function SearchFlight() {
   }
   const showPassengerInput_2 = () => {
     setPassengerInput_2(!passengerInput_2)
-    console.log("muneeb")
   }
   const hidePassengerInput = () => {
     setPassengerInput(false)
   }
   const hidePassengerInput_2 = () => {
-    console.log("mustafa")
     setPassengerInput_2(false)
   }
   const passengerCount = (one, two, three, four) => {
@@ -497,6 +512,9 @@ function SearchFlight() {
 
   return (
     <div className='overflow-x-hidden relative'>
+      {refreshState === "true" &&
+        <RefreshPage content={state.details} beingLoaded={refreshLoad} loadCompleted={resetRefreshLoad} />
+      }
       <TopBarOne />
       <TopBarTwo />
       <div className='container mb-12 mt-20' >
@@ -1200,6 +1218,7 @@ function SearchFlight() {
         isLoading &&
         <Loading />
       }
+
     </div>
 
   )
